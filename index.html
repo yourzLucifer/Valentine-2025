@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shree, Will You Be My Valentine?</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #ffebf0;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      text-align: center;
+    }
+
+    .valentine-section {
+      margin-top: 100px;
+    }
+
+    .message {
+      font-size: 56px;
+      font-weight: bold;
+      color: #e60073;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .yes-btn, .no-btn {
+      font-size: 40px;
+      padding: 20px 40px;
+      margin: 20px;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .yes-btn {
+      background-color: #ff4d88;
+      color: white;
+    }
+
+    .no-btn {
+      background-color: #bfbfbf;
+      color: white;
+    }
+
+    .yes-btn:hover, .no-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .yes-popup {
+      position: absolute;
+      font-size: 26px;
+      padding: 14px 20px;
+      background-color: #e6399a;
+      color: white;
+      border-radius: 30px;
+      transition: transform 0.2s;
+    }
+
+    .letter-section {
+      display: none;
+      font-size: 28px;
+      color: #333;
+      padding: 30px;
+      line-height: 1.7;
+    }
+
+    .letter-title {
+      font-size: 52px;
+      color: #e6399a;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .start-btn {
+      font-size: 32px;
+      padding: 16px 40px;
+      margin-top: 40px;
+      background-color: #e6399a;
+      color: white;
+      border-radius: 25px;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .start-btn:hover {
+      background-color: #c02778;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Valentine Page -->
+<div class="valentine-section" id="valentineSection">
+  <div class="message">Will you be my Valentine? ❤️</div>
+  <button class="yes-btn" onclick="showLetter()">YES</button>
+  <button class="no-btn" onclick="spawnYesButton()">NO</button>
+</div>
+
+<!-- Letter Section -->
+<div class="letter-section" id="letterSection">
+  <div class="letter-title">A Letter for You...</div>
+  <p>
+    Hey Shree...  
+    I know how many times you tried to escape by clicking no... but you see... how could I let that happen?  
+    You are the one who makes my world brighter, who makes my days sweeter.  
+    I cannot imagine a day without you.  
+    So here I am with something cute... because you are even cuter...  
+    Thanks for always staying beside me, always being by my side.  
+    Whatever I am right now is because I have you.  
+    I hope you accept me for the way I am.  
+    And before you go... wanna play a little game? 🎮❤️  
+  </p>
+  <button class="start-btn" onclick="startGame()">Start Game</button>
+</div>
+<!-- Game Section -->
+<div class="game-section" id="gameSection" style="display:none;">
+  <div class="scoreboard" id="scoreBoard">Score: 0</div>
+  <div class="points-info" id="pointsInfo">
+    💌 = 1 | 🌹 = 5 | ❤️ = 10 | 👄 = 20
+  </div>
+  <div class="timer" id="timer">Time: 60s</div>
+  <div class="basket" id="basket"></div>
+</div>
+
+<script>
+let score = 0;
+let timer = 60;
+let gameInterval;
+let timerInterval;
+
+// Hide YES buttons when game starts
+function hideYesPopups() {
+  document.querySelectorAll('.yes-popup').forEach(btn => btn.remove());
+}
+
+// Show Letter Section
+function showLetter() {
+  document.getElementById('valentineSection').style.display = 'none';
+  document.getElementById('letterSection').style.display = 'block';
+}
+
+// YES Button Spawner
+function spawnYesButton() {
+  const yesBtn = document.createElement('button');
+  yesBtn.innerText = 'YES';
+  yesBtn.classList.add('yes-popup');
+  yesBtn.style.top = Math.random() * 80 + 'vh';
+  yesBtn.style.left = Math.random() * 80 + 'vw';
+  yesBtn.onclick = showLetter;
+  document.body.appendChild(yesBtn);
+}
+
+// Start Game
+function startGame() {
+  document.getElementById('letterSection').style.display = 'none';
+  document.getElementById('gameSection').style.display = 'block';
+  hideYesPopups();
+
+  // Start Timer
+  timerInterval = setInterval(() => {
+    timer--;
+    document.getElementById('timer').innerText = `Time: ${timer}s`;
+    if (timer <= 0) {
+      endGame();
+    }
+  }, 1000);
+
+  // Spawn Emojis
+  gameInterval = setInterval(createEmoji, 600);
+}
+
+// Create Falling Emojis
+function createEmoji() {
+  const emoji = document.createElement('div');
+  emoji.classList.add('emoji');
+  emoji.innerHTML = randomEmoji();
+  emoji.style.left = Math.random() * 95 + 'vw';
+  emoji.style.animationDuration = Math.random() * 3 + 2 + 's';
+  document.getElementById('gameSection').appendChild(emoji);
+
+  let fallInterval = setInterval(() => {
+    const basket = document.getElementById('basket');
+    const basketRect = basket.getBoundingClientRect();
+    const emojiRect = emoji.getBoundingClientRect();
+
+    if (
+      emojiRect.bottom >= basketRect.top &&
+      emojiRect.top <= basketRect.bottom &&
+      emojiRect.right >= basketRect.left &&
+      emojiRect.left <= basketRect.right
+    ) {
+      score += emojiPoints(emoji.innerHTML);
+      document.getElementById('scoreBoard').innerText = `Score: ${score}`;
+      emoji.remove();
+      clearInterval(fallInterval);
+    }
+
+    if (emojiRect.top > window.innerHeight) {
+      emoji.remove();
+      clearInterval(fallInterval);
+    }
+  }, 20);
+}
+
+// Random Emoji
+function randomEmoji() {
+  const emojis = ['💌', '🌹', '❤️', '👄'];
+  return emojis[Math.floor(Math.random() * emojis.length)];
+}
+
+// Emoji Points
+function emojiPoints(emoji) {
+  if (emoji === '💌') return 1;
+  if (emoji === '🌹') return 5;
+  if (emoji === '❤️') return 10;
+  if (emoji === '👄') return 20;
+  return 0;
+}
+
+// Basket Movement (Touch-Slide Mobile Friendly)
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => {
+  touchStartX = e.touches[0].clientX;
+});
+
+document.addEventListener('touchmove', (e) => {
+  const touchMoveX = e.touches[0].clientX;
+  const basket = document.getElementById('basket');
+  basket.style.left = `${touchMoveX - 50}px`;
+});
+
+// End Game
+function endGame() {
+  clearInterval(gameInterval);
+  clearInterval(timerInterval);
+  
+  let message = "";
+  if (score >= 100) {
+    message = "Amazing! You caught so much love! ❤️";
+  } else if (score >= 70) {
+    message = "Great Job! Your heart is full of roses! 🌹";
+  } else if (score >= 50) {
+    message = "Nice try! You caught some sweet love! 💌";
+  } else {
+    message = "Cute effort! But I love you more anyway! 💖";
+  }
+
+  alert(`Time's Up!\nScore: ${score}\n${message}`);
+  location.reload();
+}
+</script>
