@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shree, Will You Be My Valentine?</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #ffebf0;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      position: relative;
+      touch-action: manipulation;
+    }
+
+    /* Valentine Section */
+    .valentine-section {
+      text-align: center;
+    }
+
+    .message {
+      font-size: 60px;
+      color: #e60073;
+      font-weight: bold;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    }
+
+    /* Big Yes/No Buttons */
+    .yes-btn, .no-btn {
+      font-size: 50px;
+      padding: 20px 50px;
+      margin: 20px;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .yes-btn {
+      background-color: #ff4d88;
+      color: white;
+    }
+
+    .no-btn {
+      background-color: #bfbfbf;
+      color: white;
+    }
+
+    .yes-btn:hover, .no-btn:hover {
+      transform: scale(1.1);
+    }
+
+    /* Random YES Buttons */
+    .yes-popup {
+      position: absolute;
+      font-size: 30px;
+      padding: 12px 20px;
+      background-color: #e6399a;
+      color: white;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .yes-popup:hover {
+      transform: scale(1.1);
+    }
+
+    /* Letter Section */
+    .letter-section {
+      display: none;
+      text-align: center;
+      padding: 30px;
+      color: #333;
+      font-size: 26px;
+      line-height: 1.8;
+    }
+
+    .letter-title {
+      font-size: 54px;
+      font-weight: bold;
+      color: #e6399a;
+      margin-bottom: 25px;
+    }
+
+    .start-btn {
+      font-size: 32px;
+      padding: 20px 50px;
+      margin-top: 40px;
+      background-color: #e6399a;
+      color: white;
+      border-radius: 40px;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .start-btn:hover {
+      background-color: #c02778;
+    }
+
+    /* Game Section */
+    .game-section {
+      display: none;
+      position: relative;
+      width: 100%;
+      height: 80vh;
+      background-color: #ffe6ea;
+      overflow: hidden;
+    }
+
+    .scoreboard {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      font-size: 36px;
+      font-weight: bold;
+      color: #e6399a;
+    }
+
+    /* Timer Display */
+    .timer {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 42px;
+      font-weight: bold;
+      color: #ff3366;
+      font-family: 'Georgia', serif;
+    }
+
+    .emoji-points {
+      position: absolute;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 28px;
+      font-weight: bold;
+      color: #d63384;
+    }
+
+    .basket {
+      position: absolute;
+      bottom: 20px;
+      width: 130px;
+      height: 110px;
+      background-image: url('https://cdn-icons-png.flaticon.com/512/2425/2425127.png');
+      background-size: cover;
+    }
+
+    .emoji {
+      position: absolute;
+      font-size: 50px;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      from { top: -60px; }
+      to { top: 100vh; }
+    }
+
+    /* Time's Up Message */
+    .end-message {
+      font-size: 60px;
+      font-weight: bold;
+      color: #e60073;
+      font-family: 'Georgia', serif;
+      text-align: center;
+      margin-top: 20px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Valentine Section -->
+  <div class="valentine-section" id="valentineSection">
+    <div class="message">Shree, will you be my Valentine? ❤️</div>
+    <button class="yes-btn" onclick="showLetter()">YES</button>
+    <button class="no-btn" onclick="spawnYesButton()">NO</button>
+  </div>
+
+  <!-- Letter Section -->
+  <div class="letter-section" id="letterSection">
+    <div class="letter-title">A Letter for You...</div>
+    <p>
+      Hey Shree... I know how many times you tried to escape by clicking no... but see? 
+      How could I let that happen when you are the one who makes my world brighter and my days sweeter. 
+      I cannot imagine a day without you. So, here I am with something cute... because you are even cuter. 
+      Thanks for always staying beside me and making me who I am today.  
+      Whatever I am right now is because I have you.  
+      Thank you for making me yours.  
+      Whether it’s 10 years or 20, I will always try to have you, and you already have me. Don’t worry.  
+      I hope you accept me for who I am, and I promise I will always be better.  
+      And Shree… thank you… for always loving me and caring about me.  
+      - Your Anshu ❤️  
+      Btw… before you go, do you wanna play a little game with me? 🎮💕
+    </p>
+    <button class="start-btn" onclick="startGame()">Start Game</button>
+  </div>
+
+  <!-- Game Section -->
+  <div class="game-section" id="gameSection">
+    <div class="scoreboard" id="scoreBoard">Score: 0</div>
+    <div class="timer" id="timer">Time: 60s</div>
+    <div class="emoji-points">💌=1 🌹=5 ❤️=10 👄=20</div>
+    <div class="basket" id="basket"></div>
+  </div>
+
+  <script>
+    let score = 0;
+    let timeLeft = 60;
+    let gameInterval;
+    let timerInterval;
+
+    // Random YES Button
+    function spawnYesButton() {
+      const yesBtn = document.createElement('button');
+      yesBtn.innerText = 'YES';
+      yesBtn.classList.add('yes-popup');
+      yesBtn.style.top = Math.random() * 80 + 'vh';
+      yesBtn.style.left = Math.random() * 80 + 'vw';
+      yesBtn.onclick = showLetter;
+      document.body.appendChild(yesBtn);
+    }
+
+    // Show Letter
+    function showLetter() {
+      document.querySelectorAll('.yes-popup').forEach(btn => btn.remove());
+      document.getElementById('valentineSection').style.display = 'none';
+      document.getElementById('letterSection').style.display = 'block';
+    }
+
+    // Start Game
+    function startGame() {
+      document.getElementById('letterSection').style.display = 'none';
+      document.getElementById('gameSection').style.display = 'block';
+
+      const basket = document.getElementById('basket');
+      let basketX = window.innerWidth / 2;
+
+      window.addEventListener('touchmove', (e) => {
+        basketX = e.touches[0].clientX - 65;
+        basket.style.left = `${basketX}px`;
+      });
+
+      // Timer
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').innerText = `Time: ${timeLeft}s`;
+        if (timeLeft <= 0) endGame();
+      }, 1000);
+
+      // Falling Emojis
+      gameInterval = setInterval(() => {
+        createEmoji();
+      }, 500);
+    }
+
+    // Create Falling Emoji
+    function createEmoji() {
+      const emoji = document.createElement('div');
+      emoji.classList.add('emoji');
+      emoji.innerHTML = randomEmoji();
+      emoji.style.left = Math.random() * 90 + 'vw';
+      emoji.style.animationDuration = Math.random() * 2 + 2 + 's';
+      document.getElementById('gameSection').appendChild(emoji);
+
+      let emojiFall = setInterval(() => {
+        const basketRect = document.getElementById('basket').getBoundingClientRect();
+        const emojiRect = emoji.getBoundingClientRect();
+
+        if (
+          emojiRect.bottom >= basketRect.top &&
+          emojiRect.top <= basketRect.bottom &&
+          emojiRect.right >= basketRect.left &&
+          emojiRect.left <= basketRect.right
+        ) {
+          score += emojiPoints(emoji.innerHTML);
+          document.getElementById('scoreBoard').innerText = `Score: ${score}`;
+          emoji.remove();
+          clearInterval(emojiFall);
+        }
+
+        if (emojiRect.top > window.innerHeight) {
+          emoji.remove();
+          clearInterval(emojiFall);
+        }
+      }, 10);
+    }
+
+    // Random Emoji
+    function randomEmoji() {
+      const emojis = ['💌', '🌹', '❤️', '👄'];
+      return emojis[Math.floor(Math.random() * emojis.length)];
+    }
+
+    // Emoji Points
+    function emojiPoints(emoji) {
+      if (emoji === '💌') return 1;
+      if (emoji === '🌹') return 5;
+      if (emoji === '❤️') return 10;
+      if (emoji === '👄') return 20;
+      return 0;
+    }
+
+    // End Game with Winning Messages
+    function endGame() {
+      clearInterval(gameInterval);
+      clearInterval(timerInterval);
+      document.getElementById('gameSection').innerHTML = `
+        <div class="end-message">
+          Time's up! Your Score: ${score}<br/>
+          ${getPositiveMessage(score)}
+        </div>
+      `;
+    }
+
+    // Personalized Positive Messages
+    function getPositiveMessage(score) {
+      if (score <= 50) {
+        return "Aww, my Shree! It’s not about the score; you being here means everything to me. You already own my heart forever ❤️ – Anshu";
+      } else if (score <= 100) {
+        return "Look at you, Shree! Petal by petal, you’re collecting my heart. Just like how you have me in real life. You’ll always be my sweetest catch 🌹 – Anshu";
+      } else if (score <= 120) {
+        return "Wow, Shree! You’re shining! Even Cupid is proud of you! But guess what? The real prize is me—yours, completely and forever 💘 – Anshu";
+      } else {
+        return "Unbelievable, Shree! You didn’t just catch hearts and roses, you captured all of me. You are my greatest win, my forever Valentine 💖 – Anshu";
+      }
+    }
+  </script>
+
+</body>
+</html>
