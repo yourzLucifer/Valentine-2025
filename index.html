@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shree, Will You Be My Valentine?</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #ffebf0;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      position: relative;
+      touch-action: manipulation;
+    }
+
+    .valentine-section {
+      text-align: center;
+    }
+
+    .message {
+      font-size: 55px;
+      color: #e60073;
+      font-weight: bold;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .yes-btn, .no-btn {
+      font-size: 36px; /* Bigger buttons */
+      padding: 20px 45px;
+      margin: 16px;
+      border-radius: 40px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.3s, background-color 0.3s;
+    }
+
+    .yes-btn {
+      background-color: #ff4d88;
+      color: white;
+    }
+
+    .no-btn {
+      background-color: #bfbfbf;
+      color: white;
+    }
+
+    .yes-btn:hover, .no-btn:hover {
+      transform: scale(1.15);
+    }
+
+    .letter-section {
+      display: none;
+      text-align: center;
+      padding: 30px;
+      color: #333;
+      font-size: 24px;
+      line-height: 1.8;
+    }
+
+    .letter-title {
+      font-size: 48px;
+      font-weight: bold;
+      color: #e6399a;
+      margin-bottom: 25px;
+    }
+
+    .game-section {
+      display: none;
+      position: relative;
+      width: 100%;
+      height: 80vh;
+      background-color: #ffe6ea;
+      overflow: hidden;
+    }
+
+    .timer {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 30px;
+      font-weight: bold;
+      color: #d63384;
+    }
+
+    .scoreboard {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 28px;
+      font-weight: bold;
+      color: #e6399a;
+    }
+
+    .emoji-points {
+      position: absolute;
+      top: 55px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 22px;
+      font-weight: bold;
+      color: #d63384;
+    }
+
+    .basket {
+      position: absolute;
+      bottom: 15px;
+      width: 120px;
+      height: 100px;
+      background-image: url('https://cdn-icons-png.flaticon.com/512/2425/2425127.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    .emoji {
+      position: absolute;
+      font-size: 40px;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      from { top: -60px; }
+      to { top: 100vh; }
+    }
+
+    .start-btn {
+      font-size: 28px;
+      padding: 16px 40px;
+      margin-top: 40px;
+      background-color: #e6399a;
+      color: white;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .start-btn:hover {
+      background-color: #c02778;
+    }
+
+    .end-message {
+      font-size: 50px; /* Larger font for time's up */
+      font-weight: bold;
+      color: #e60073;
+      text-align: center;
+      font-family: 'Georgia', serif; /* Different font style */
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Valentine Page -->
+  <div class="valentine-section" id="valentineSection">
+    <div class="message">Will you be my Valentine? ❤️</div>
+    <button class="yes-btn" onclick="showLetter()">Yes</button>
+    <button class="no-btn" onclick="spawnYesButton()">No</button>
+  </div>
+
+  <!-- Letter Section -->
+  <div class="letter-section" id="letterSection">
+    <div class="letter-title">A Letter for You...</div>
+    <p>Hey Shree... I know how many times you tried to escape by clicking no...but you see..how could I let that happen..because you are the one who makes my world brighter..who makes my days sweeter..you know..I cannot imagine a day without you..so here I am..with something cute..because you are even cuter..thanks for always staying beside me..always being by my side babe..whatever im rn is cuz i have you thanks for making me yours..let it be 10 years or 20..ill always try to have you and you already have me dw dw..i hope you accept me for the way i am and ill be better obviously and thanks for always..for always loving me and caring about me - Your Anshu..Btw before going do you wanna play a little game..?</p>
+    <button class="start-btn" onclick="startGame()">Start Game</button>
+  </div>
+
+  <!-- Game Section -->
+  <div class="game-section" id="gameSection">
+    <div class="timer" id="timer">Time: 60s</div>
+    <div class="scoreboard" id="scoreBoard">Score: 0</div>
+    <div class="emoji-points">💌=1 🌹=5 ❤️=10 👄=20</div>
+    <div class="basket" id="basket"></div>
+  </div>
+
+  <script>
+    let score = 0;
+    let timeLeft = 60;
+    let gameInterval;
+    let timerInterval;
+
+    function spawnYesButton() {
+      const yesBtn = document.createElement('button');
+      yesBtn.innerText = 'YES';
+      yesBtn.classList.add('yes-popup');
+      yesBtn.style.top = Math.random() * 80 + 'vh';
+      yesBtn.style.left = Math.random() * 80 + 'vw';
+      yesBtn.onclick = showLetter;
+      document.body.appendChild(yesBtn);
+    }
+
+    function showLetter() {
+      document.querySelectorAll('.yes-popup').forEach(btn => btn.remove());
+      document.getElementById('valentineSection').style.display = 'none';
+      document.getElementById('letterSection').style.display = 'block';
+    }
+
+    function startGame() {
+      document.getElementById('letterSection').style.display = 'none';
+      document.getElementById('gameSection').style.display = 'block';
+
+      const basket = document.getElementById('basket');
+      let basketX = window.innerWidth / 2;
+
+      window.addEventListener('touchmove', (e) => {
+        basketX = e.touches[0].clientX - 60;
+        basket.style.left = `${basketX}px`;
+      });
+
+      // Show Timer
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').innerText = `Time: ${timeLeft}s`;
+        if (timeLeft <= 0) endGame();
+      }, 1000);
+
+      gameInterval = setInterval(() => {
+        createEmoji();
+      }, 500);
+    }
+
+    function createEmoji() {
+      const emoji = document.createElement('div');
+      emoji.classList.add('emoji');
+      emoji.innerHTML = randomEmoji();
+      emoji.style.left = Math.random() * 90 + 'vw';
+      emoji.style.animationDuration = Math.random() * 2 + 2 + 's';
+      document.getElementById('gameSection').appendChild(emoji);
+
+      let emojiFall = setInterval(() => {
+        const basketRect = document.getElementById('basket').getBoundingClientRect();
+        const emojiRect = emoji.getBoundingClientRect();
+
+        if (
+          emojiRect.bottom >= basketRect.top &&
+          emojiRect.top <= basketRect.bottom &&
+          emojiRect.right >= basketRect.left &&
+          emojiRect.left <= basketRect.right
+        ) {
+          score += emojiPoints(emoji.innerHTML);
+          document.getElementById('scoreBoard').innerText = `Score: ${score}`;
+          emoji.remove();
+          clearInterval(emojiFall);
+        }
+
+        if (emojiRect.top > window.innerHeight) {
+          emoji.remove();
+          clearInterval(emojiFall);
+        }
+      }, 10);
+    }
+
+    function randomEmoji() {
+      const emojis = ['💌', '🌹', '❤️', '👄'];
+      return emojis[Math.floor(Math.random() * emojis.length)];
+    }
+
+    function emojiPoints(emoji) {
+      if (emoji === '💌') return 1;
+      if (emoji === '🌹') return 5;
+      if (emoji === '❤️') return 10;
+      if (emoji === '👄') return 20;
+      return 0;
+    }
+
+    function endGame() {
+      clearInterval(gameInterval);
+      clearInterval(timerInterval);
+      document.getElementById('gameSection').innerHTML = `
+        <div class="end-message">
+          Time's up!<br/>
+          Your Score: ${score}<br/>
+          ${getPositiveMessage(score)}
+        </div>
+      `;
+    }
+
+    function getPositiveMessage(score) {
+      if (score < 30) return "Aww, my Shree! It’s not about the score; you being here means everything to me. You already own my heart forever ❤️ – Anshu";
+      if (score < 60) return "Look at you, Shree! Petal by petal, you’re collecting my heart. Just like how you have me in real life. You’ll always be my sweetest catch 🌹 – Anshu";
+      if (score < 100) return "Wow, Shree! You’re shining! Even Cupid is proud of you! But guess what? The real prize is me—yours, completely and forever 💘 – Anshu";
+      return "Unbelievable, Shree! You didn’t just catch hearts and roses, you captured all of me. You are my greatest win, my forever Valentine 💖 – Anshu";
+    }
+  </script>
+
+</body>
+</html>
